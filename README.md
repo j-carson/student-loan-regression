@@ -10,9 +10,9 @@ graduating with a lot of debt?
 - Americans owe over 1.5 trillion dollars in student loan debt according to the [NY Federal Reserve.](https://www.newyorkfed.org/microeconomics/hhdc.html)
 
 - These loans can have a significant impact on life after graduation per [Pew Research.](http://www.pewresearch.org/fact-tank/2017/08/24/5-facts-about-student-loans/) 
- - About one-in-five employed adults ages 25 to 39 with at least a bachelor’s degree and outstanding student loans (21%) have more than one job. Those without student loan debt are roughly half as likely (11%) to hold multiple jobs. 
+   - About one-in-five employed adults ages 25 to 39 with at least a bachelor’s degree and outstanding student loans (21%) have more than one job. Those without student loan debt are roughly half as likely (11%) to hold multiple jobs. 
  
- - Only 27% of young college graduates with student loans say they are living comfortably, compared with 45% of college graduates of a similar age without outstanding loans.
+   - Only 27% of young college graduates with student loans say they are living comfortably, compared with 45% of college graduates of a similar age without outstanding loans.
 
 
 ## Methodology
@@ -25,21 +25,21 @@ To complete this assignment, at least 10 features and 1000 rows are required.
 - **Targets**: Average debt at graduation, percentage of parents taking PLUS loans.
 
 - **Features**: 
- - College type (public, private)
- - Number of undergraduates
- - College location (city, rural, etc.) 
- - College state (may be too many categories?)
- - Acceptance rate
- - Draw rate. Draw rate is the yield divided by the admit rate, a measure of whether the school is a typical student's first choice
- - Freshman academic profile, SAT score and/or GPA. Using both may be too collinear?
- - Ethnicity of students
- - Percent international students
- - Cost of attendance, in-state
- - Cost of attendance, out-of-state (public universities)
- - Financial aid methodology (federal or institutional)
- - Financial aid percent need met
- - Financial aid average grant received
- - Average net price (may be collinear with above)
+    - College type (public, private)
+    - Number of undergraduates
+    - College location (city, rural, etc.) 
+    - College state (may be too many categories?)
+    - Acceptance rate
+    - Draw rate. Draw rate is the yield divided by the admit rate, a measure of whether the school is a typical student's first choice
+    - Freshman academic profile, SAT score and/or GPA. Using both may be too collinear?
+    - Ethnicity of students
+    - Percent international students
+    - Cost of attendance, in-state
+    - Cost of attendance, out-of-state (public universities)
+    - Financial aid methodology (federal or institutional)
+    - Financial aid percent need met
+    - Financial aid average grant received
+    - Average net price (may be collinear with above)
  
 
 ## Data
