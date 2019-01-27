@@ -1,17 +1,21 @@
+"""
+First step loading and cleaning - reads the raw College Scorecard CSV files and
+drops columns that probably won't be needed in my model and rows that are not
+schools that offer four year undergraduate degrees
+"""
+
 import pandas as pd
 import numpy as np
 
-
+# download from https://collegescorecard.ed.gov/data/
 FILEDIR = "../data/"
 
-FILES = [  "MERGED2013_14_PP.csv",
-           "MERGED2014_15_PP.csv",
-           "MERGED2015_16_PP.csv",
-           "MERGED2016_17_PP.csv" ]
+scorecard_files = [ "MERGED2016_17_PP.csv"  ]
+FILES = [ FILEDIR + f for f in scorecard_files ] 
 
-
-# load the data dictionary 
-datad = pd.read_excel( FILEDIR +"CollegeScorecardDataDictionary.xlsx", sheet_name="data_dictionary")
+# download data dictionary from https://collegescorecard.ed.gov/assets/CollegeScorecardDataDictionary.xlsx
+datad = pd.read_excel( FILEDIR +"CollegeScorecardDataDictionary.xlsx", 
+                      sheet_name="data_dictionary")
 
 
 # take the dashes and spaces out of the excel column names (so python doesn't think I'm subtracting)
@@ -20,7 +24,7 @@ datad.columns = datad.columns.str.replace(" ", "_").str.replace("-", "_").str.lo
 
 
 # Collect the full list of column names, then drop names from 
-# to make the list of columns we're keeping
+# certain categories to make the list of columns we're keeping
 subset_columns = list(datad.variable_name.dropna())
 
 
@@ -31,8 +35,9 @@ def drop_columns_by_category(category):
 
 
 # Drop columns by category listed in the data dictionary
-# dropping things that happen after student decides to attend a college 
-# -- repayment shows repayment and default rates
+# dropping things not related to the goal of avoiding schools where 
+# students take out large student loans
+# -- repayment shows loan repayment and default rates
 # -- academics shows the majors/programs offered by the college and what percent
 #    of students graduate with that program
 # -- completion columns are related to graduation rates
@@ -66,7 +71,7 @@ def read_scorecard(filename):
                        )
     # Pull out the four-year schools
     #
-    # Predominant degree earned codes are
+    # Predominant undergrad degree earned codes are
     # 0 = Not Classified
     # 1 = Certificate-granting
     # 2 = Associates-granting
@@ -74,6 +79,7 @@ def read_scorecard(filename):
     # 4 = Entirely graduate-degree granting
 
     fouryear = full_data.query('PREDDEG == 3')
+    fouryear = fouryear.drop(columns='PREDDEG')
 
     # and then public or non-profit
     # Control code are
@@ -82,6 +88,15 @@ def read_scorecard(filename):
     # 3 = Private for-profit
 
     fouryear = fouryear.query('CONTROL != 3')
+    
+    # curroper == 0 means school has closed
+    fouryear = fouryear.query('CURROPER != 0')
+    fouryear = fouryear.drop(columns='CURROPER')
+    
+    # distance-only schools don't report as much data
+    # drop it early (0 == not distance only, i.e. has a campus)
+    fouryear = fouryear.query('DISTANCEONLY == 0')
+    fouryear = fouryear.drop(columns='DISTANCEONLY')
     return fouryear
 
 
@@ -93,23 +108,18 @@ file_contents = dict()
 for f in FILES:
     file_contents[f] = read_scorecard(FILEDIR + f)
 
+# This is filtering out columns that have little usable
+# data, including fields that have become obsolete 
+# over time
 
-# drop columns where we have less than 1000 observations
-# a number of these are columns left over from changes in
-# versions of the IPEDS survey
-
-too_many_nulls = set()
+sparse_set = set()
 for f in FILES:
-    df = file_contents[f]
-    too_sparse = df.columns[ df.count() < 1000 ]
-    too_many_nulls.update(too_sparse)
-
-
+    counts = file_contents[f].count()
+    sparse_cols = counts[ counts < 400 ].index
+    sparse_set.update(sparse_cols)
+    
 for f in FILES:
-    file_contents[f] = file_contents[f].drop(columns=too_many_nulls)
-
-
-for f in FILES:
-    new_name = f.replace(".csv", ".pck")
+    file_contents[f] = file_contents[f].drop(columns=sparse_set)
+    new_name = f.replace(".csv", ".pck").replace("PP", "subset")
     file_contents[f].to_pickle(FILEDIR + new_name)
 
