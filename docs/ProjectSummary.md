@@ -21,7 +21,7 @@ You're a high school guidance counselor. What do you tell your students?
 Four year, US-based, public and private universities.
 ### Target
 
-Average debt at graduation per school 
+Median debt at graduation, for students who received loans, per school. 
 
 ### Features
 
@@ -132,9 +132,11 @@ scorecard_data = pd.read_csv(filename,
 
 Once the data was read in, I further suppressed schools that were not primarily four year institutions, were for-profit schools, or which were online-only education. This left me a set of schools which I hoped would be more like comparing apples-to-apples. 
 
-Once I dropped those rows, I dropped any columns that remained that had fewer than 400 observations as being too sparsely populated to work with. Many of these were columns created for items collected in previous years but no longer being surveyed.
+Once I dropped those rows, I dropped any columns that remained that had fewer than 400 observations as being too sparsely populated to work with. Many of these were columns that were entirely null-filled,  created for items collected in previous years but not collected in 2016-2017. Apparently no
+columns are ever dropped from the database. 
 
-At this point I had a more manageable dataset of 1819 rows and 171 columns which I later used for further refinement and data cleaning.
+At this point I had a more manageable dataset of 1819 rows and 171 columns. That was still a lot of potential features to 
+look at, but much more manageable than the original dataset.
 
 
 ### About Collegedata.com
@@ -222,14 +224,14 @@ unusual colleges, such as tuition-free Berea college and several niche instituti
 
 ### Feature engineering
 
-I spent a lot of time feature engineering before I ran my first linear models. I didn't quite get the point that the feature engineering was not to change how the data looked by itself, but how it looks when fitted against the target variable. (I think the feature engineering notebook  Trying to make the data 'look more normal' without 
-constantly plotting it versus the target variable wasted a lot of effort.
+I spent a lot of time feature engineering before I ran my first linear models. I didn't quite get the point that the feature engineering was not to change how the data looked by itself, but how it looks when plotted  against the target variable. 
+I also realized too late in the game  that the 
+StandardScaler is doing a lot of the work for you under the covers.  I should have been plotting the output of 
+StandardScaler versus the target as a better way of looking at heteroskedacity and whether feature engineering was necessary. . 
 
-In addition, I still do not have a good feel for successful feature engineering. I chose (or not) the engineered features primarily by swapping them into the model and seeing what happened. Clearly as the number of 
-features grows, trial and error would not cut it. I don't know how to tell
-if the engineering I chose, even when it improved R-squared. 
-
-I don't want to engineer all my features than try the different combinations again. I need to learn how to better recognize where my model could benefit 
+I still do not have a good feel for successful feature engineering. I chose (or not) the engineered features primarily 
+by swapping them into the model and seeing what happened. Clearly as the number of features grows, trial and error would 
+not cut it.  I need to learn how to better recognize where my model could benefit 
 from engineering and apply it more strategically. 
 
 ### Ready, Fire, Aim
@@ -239,30 +241,33 @@ Project planning is extremely difficult in a bootcamp situation. Students are gi
 *  a hard deadline
 *  using data we've never used before
 *  using techniques we've never used before
-*  while being trained on those techniques as we go
+*  while being trained on those techniques as we go along
 
-Time managment under these circumstances is very difficult -- It's hard to know how long something you have never done before is going to take. It's hard to understand what it is you don't know about what you
+Time managment under these circumstances is very difficult -- It's hard to know how long something you 
+have never done before is going to take. It's hard to understand what it is you don't understand about what you
 are doing. 
 
-I have been reacting to hard deadlines (such as projects and pair programming assignments with something of a ready-fire-aim approach, "just jump in and do something quickly." 
+I have been reacting to hard deadlines (such as projects and pair programming assignments with something of 
+a ready-fire-aim approach, "just jump in and do something quickly." 
 
-I definitely hit a wall with this approach on this project and had to actually take a day off from coding to go back through all my notes, powerpoints, and class 
-Jupyter notebooks to find the "lay of the land" again. This cost me a ton
-of project work time, but I needed it. I feel like I understand
+I definitely hit a wall with this on this project and had to actually take an evening off from coding to go back through 
+all my notes, powerpoints, and class Jupyter notebooks to find the "lay of the land" again. This cost me a ton
+of project work time, but I needed it. I now feel like I understand
 what was "supposed to happen" in a linear regression study if that didn't exactly happen this time.
 
 However, I'm not sure my project management skills have grown from this 
 experience. I mean, it's nice that you give us a deadline for an MVP, 
-but how exactly do we meet that? Either you have the data or
-you don't. There wasn't a way to just skip trying to figure out all my data columns and go
+but how exactly do we recover from not  meeting that? 
+There wasn't a way to just skip trying to figure out all my data columns and go
 straight to a linear regression with a 1800 column data set. 
 
-Also, I think that I lost all of my talk practice time by making last 
-minute chart changes when I asked for feedback on my slides. 
+Also, lost all of my talk practice time by making last minute chart changes when I asked for feedback on my slides. 
+I needed to keep a better track of how I spend those last couple of hours.
 
 ### Detecting volatility in model versions
 
-So, one of the bugs I had when I was switching from the cross validation data to the holdout set -- all of a sudden one of my coefficients radically 
+So, one of the bugs I had when I was switching from the cross validation data to the holdout set -- all of a sudden 
+one of my coefficients radically 
 changed. I quickly found the bug -- I had
 retrained with the holdout set instead of using only the training data. But
 that coeffient must have had high variance at some point during the 
@@ -275,6 +280,6 @@ rather than having the CV-functions automate that step?
 
 - Learn how to use the ```fuzzywuzzy``` package
 - Find a better source for the data that wasn't available on collegedata.com
-- Rework the feature engineering and feature selection with what I understand now to and make sure I truly found the best linear model with the most predictive available features.
-
-
+- Rework the feature engineering and feature selection with what I understand now to and make sure I truly found the best 
+linear model with the most predictive available features.
+- Build project time management skills
