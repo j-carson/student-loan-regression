@@ -207,7 +207,8 @@ Matplotlib
 
 ## Communication
 
-Slides are available in the github repository.
+Slides are available in the docs subdirectory of the project github repository.
+There is a little more discussion in the root-level readme of the github repository. `
 
 ## Lessons Learned
 
