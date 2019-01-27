@@ -102,3 +102,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# mac
+**/.DS_Store/*
+
+# place to store stuff that I'm not planning to check in 
+**/junk/*
+.DS_Store
