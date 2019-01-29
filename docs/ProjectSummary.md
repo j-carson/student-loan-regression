@@ -130,7 +130,7 @@ scorecard_data = pd.read_csv(filename,
                        )
 ```
 
-Once the data was read in, I further suppressed schools that were not primarily four year institutions, were for-profit schools, or which were online-only education. This left me a set of schools which I hoped would be more like comparing apples-to-apples. 
+Once the data was read in, I further suppressed schools that did not offer four year degrees as their predominant program, were for-profit schools, or which were online-only education. This left me a set of schools which I hoped would be more like comparing apples-to-apples. 
 
 Once I dropped those rows, I dropped any columns that remained that had fewer than 400 observations as being too sparsely populated to work with. Many of these were columns that were entirely null-filled,  created for items collected in previous years but not collected in 2016-2017. Apparently no
 columns are ever dropped from the database. 
@@ -191,7 +191,13 @@ LassoCV
 RidgeCV
 ```
 In addition to using the output of these models, I tried to keep my target customer (a high school guidance counselor) in mind. A heavily engineered
-feature (college cost times the log of the number of undergraduates) would not be actionable for such a person. I tried to prefer simpler, stand-alone features wherever I could.
+feature (combining multiple columns in a non-intuitive way) would not be actionable for such a person. I tried to prefer simpler, stand-alone features.
+
+The feature enginnering in the final model included:
+
+- Log of cost (which was itself an engineered feature averaging three highly collinear features related to tuition and cost of attendence)
+- Product of log of cost with a one-hot column for public universities
+- Square of percent of white undergraduates (a proxy for student diversity)
 
 ## Tools
 
@@ -205,21 +211,15 @@ Seaborn
 Matplotlib
 ```
 
-## Communication
-
-Slides are available in the docs subdirectory of the project github repository.
-There is a little more discussion in the root-level readme of the github repository. `
-
 ## Lessons Learned
 
 ### Data cleaning
 I believe my project could have benefitted from additional data cleaning. I struggled for quite a while with web scraping. The CSV file was easy to 
 download, but it was hard getting to get the number of columns 
-down to a reasonable number, and I probably did not do enough to
-look at the outliers in the rows. Looking at the last chart in the slide deck, I'm not sure
+down to a reasonable number. Once I had something workable, I probably did not do enough to
+look at the outliers in the rows. Looking at the cost-by-category chart in the slide deck, I'm not sure
 my model is finding a difference in publc and private universities versus
-just chasing the outliers in the private university data. We have some 
-unusual colleges, such as tuition-free Berea college and several niche institutions with fewer than 30 students. A cut-off of 500 to 1000 undergraduate students minimum would still include most of the places a high school guidance counselor might think of when a parent asks about "small colleges."
+just chasing the outliers in the private university data. 
 
 ## Remaining questions
 
@@ -228,12 +228,12 @@ unusual colleges, such as tuition-free Berea college and several niche instituti
 I spent a lot of time feature engineering before I ran my first linear models. I didn't quite get the point that the feature engineering was not to change how the data looked by itself, but how it looks when plotted  against the target variable. 
 I also realized too late in the game  that the 
 StandardScaler is doing a lot of the work for you under the covers.  I should have been plotting the output of 
-StandardScaler versus the target as a better way of looking at heteroskedacity and whether feature engineering was necessary. . 
+StandardScaler versus the target as a better way of looking at heteroskedacity and determining whether feature engineering 
+was necessary. 
 
-I still do not have a good feel for successful feature engineering. I chose (or not) the engineered features primarily 
+I'm not sure  I have a good feel for successful feature engineering. I chose (or not) the engineered features primarily 
 by swapping them into the model and seeing what happened. Clearly as the number of features grows, trial and error would 
-not cut it.  I need to learn how to better recognize where my model could benefit 
-from engineering and apply it more strategically. 
+not cut it.  I need to learn to do this more strategically as well as more correctly.
 
 ### Ready, Fire, Aim
 
@@ -245,34 +245,31 @@ Project planning is extremely difficult in a bootcamp situation. Students are gi
 *  while being trained on those techniques as we go along
 
 Time managment under these circumstances is very difficult -- It's hard to know how long something you 
-have never done before is going to take. It's hard to understand what it is you don't understand about what you
-are doing. 
+have never done before is going to take. 
 
 I have been reacting to hard deadlines (such as projects and pair programming assignments with something of 
 a ready-fire-aim approach, "just jump in and do something quickly." 
 
 I definitely hit a wall with this on this project and had to actually take an evening off from coding to go back through 
-all my notes, powerpoints, and class Jupyter notebooks to find the "lay of the land" again. This cost me a ton
-of project work time, but I needed it. I now feel like I understand
+all my notes, powerpoints, and class Jupyter notebooks to find the "lay of the land" again. This cost me critial end-of-project
+work time, but I needed it. I now feel like I understand
 what was "supposed to happen" in a linear regression study if that didn't exactly happen this time.
 
 However, I'm not sure my project management skills have grown from this 
 experience. I mean, it's nice that you give us a deadline for an MVP, 
 but how exactly do we recover from not  meeting that? 
-There wasn't a way to just skip trying to figure out all my data columns and go
-straight to a linear regression with a 1800 column data set. 
 
-Also, lost all of my talk practice time by making last minute chart changes when I asked for feedback on my slides. 
-I needed to keep a better track of how I spend those last couple of hours.
+Also, I lost all of my talk practice time by making last minute chart changes when I asked for feedback on my slides. 
+I probaby should have abandoned the last-minute chart-fixing (although it turned out to be a very interesting plot!).
 
 ### Detecting volatility in model versions
 
-So, one of the bugs I had when I was switching from the cross validation data to the holdout set -- all of a sudden 
+One of the bugs I had when I was switching from the cross validation data to the holdout set -- all of a sudden 
 one of my coefficients radically 
 changed. I quickly found the bug -- I had
 retrained with the holdout set instead of using only the training data. But
 that coeffient must have had high variance at some point during the 
-time I was running the different RidgeCV and LassoCV trials. I need to go back and figure out how to detect and remove coeffients that show a lot of 
+different RidgeCV and LassoCV trials. I need to go back and figure out how to detect and remove coeffients that show a lot of 
 volatility across the cross-validation tests. Perhaps it would have been
 more obvious if I had been runnign the cross-validation tests manually
 rather than having the CV-functions automate that step? 
@@ -281,6 +278,11 @@ rather than having the CV-functions automate that step?
 
 - Learn how to use the ```fuzzywuzzy``` package
 - Find a better source for the data that wasn't available on collegedata.com
-- Rework the feature engineering and feature selection with what I understand now to and make sure I truly found the best 
+- Rework the feature engineering and feature selection given what I understand now to and make sure I truly found the best 
 linear model with the most predictive available features.
 - Build project time management skills
+
+### Source code
+
+[Source code is here](https://github.com/j-carson/student-loan-regression)
+There is a readme file in the directory.  
