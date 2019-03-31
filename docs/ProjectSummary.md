@@ -221,58 +221,6 @@ look at the outliers in the rows. Looking at the cost-by-category chart in the s
 my model is finding a difference in publc and private universities versus
 just chasing the outliers in the private university data. 
 
-## Remaining questions
-
-### Feature engineering
-
-I spent a lot of time feature engineering before I ran my first linear models. I didn't quite get the point that the feature engineering was not to change how the data looked by itself, but how it looks when plotted  against the target variable. 
-I also realized too late in the game  that the 
-StandardScaler is doing a lot of the work for you under the covers.  I should have been plotting the output of 
-StandardScaler versus the target as a better way of looking at heteroskedacity and determining whether feature engineering 
-was necessary. 
-
-I'm not sure  I have a good feel for successful feature engineering. I chose (or not) the engineered features primarily 
-by swapping them into the model and seeing what happened. Clearly as the number of features grows, trial and error would 
-not cut it.  I need to learn to do this more strategically as well as more correctly.
-
-### Ready, Fire, Aim
-
-Project planning is extremely difficult in a bootcamp situation. Students are given
-
-*  a hard deadline
-*  using data we've never used before
-*  using techniques we've never used before
-*  while being trained on those techniques as we go along
-
-Time managment under these circumstances is very difficult -- It's hard to know how long something you 
-have never done before is going to take. 
-
-I have been reacting to hard deadlines (such as projects and pair programming assignments with something of 
-a ready-fire-aim approach, "just jump in and do something quickly." 
-
-I definitely hit a wall with this on this project and had to actually take an evening off from coding to go back through 
-all my notes, powerpoints, and class Jupyter notebooks to find the "lay of the land" again. This cost me critial end-of-project
-work time, but I needed it. I now feel like I understand
-what was "supposed to happen" in a linear regression study if that didn't exactly happen this time.
-
-However, I'm not sure my project management skills have grown from this 
-experience. I mean, it's nice that you give us a deadline for an MVP, 
-but how exactly do we recover from not  meeting that? 
-
-Also, I lost all of my talk practice time by making last minute chart changes when I asked for feedback on my slides. 
-I probaby should have abandoned the last-minute chart-fixing (although it turned out to be a very interesting plot!).
-
-### Detecting volatility in model versions
-
-One of the bugs I had when I was switching from the cross validation data to the holdout set -- all of a sudden 
-one of my coefficients radically 
-changed. I quickly found the bug -- I had
-retrained with the holdout set instead of using only the training data. But
-that coeffient must have had high variance at some point during the 
-different RidgeCV and LassoCV trials. I need to go back and figure out how to detect and remove coeffients that show a lot of 
-volatility across the cross-validation tests. Perhaps it would have been
-more obvious if I had been runnign the cross-validation tests manually
-rather than having the CV-functions automate that step? 
 
 ### Future Work
 
