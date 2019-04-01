@@ -17,7 +17,6 @@ FILES = [ FILEDIR + f for f in scorecard_files ]
 datad = pd.read_excel( FILEDIR +"CollegeScorecardDataDictionary.xlsx", 
                       sheet_name="data_dictionary")
 
-
 # take the dashes and spaces out of the excel column names (so python doesn't think I'm subtracting)
 # and change to lower case (for consistency)
 datad.columns = datad.columns.str.replace(" ", "_").str.replace("-", "_").str.lower()
@@ -27,13 +26,6 @@ datad.columns = datad.columns.str.replace(" ", "_").str.replace("-", "_").str.lo
 # certain categories to make the list of columns we're keeping
 subset_columns = list(datad.variable_name.dropna())
 
-
-def drop_columns_by_category(category):
-    cat_columns = datad.loc[datad.dev_category == category, 'variable_name']
-    for c in cat_columns:
-        subset_columns.remove(c)
-
-
 # Drop columns by category listed in the data dictionary
 # dropping things not related to the goal of avoiding schools where 
 # students take out large student loans
@@ -42,6 +34,11 @@ def drop_columns_by_category(category):
 #    of students graduate with that program
 # -- completion columns are related to graduation rates
 # -- earnings columns are related to earnings after graduation
+def drop_columns_by_category(category):
+    cat_columns = datad.loc[datad.dev_category == category, 'variable_name']
+    for c in cat_columns:
+        subset_columns.remove(c)
+        
 drop_columns_by_category('repayment')
 drop_columns_by_category('academics')
 drop_columns_by_category('completion')
@@ -53,7 +50,6 @@ assert(290 == len(subset_columns))
 # but pd.read_csv is getting confused in a few places
 # One more trip to the data dictionary to tell pandas
 # which columns to interpret as strings
-
 these_are_strings = datad.loc[datad.variable_name.isin(subset_columns) &
                       datad.api_data_type.isin(['string', 'autocomplete']),
                     'variable_name']
@@ -70,15 +66,20 @@ def read_scorecard(filename):
                         dtype=type_conversion
                        )
     # Pull out the four-year schools
-    #
-    # Predominant undergrad degree earned codes are
-    # 0 = Not Classified
-    # 1 = Certificate-granting
-    # 2 = Associates-granting
-    # 3 = Bachelor's-granting
-    # 4 = Entirely graduate-degree granting
-
-    fouryear = full_data.query('PREDDEG == 3')
+    
+    # CCUGPROF = 
+    # 5 Four-year, higher part-time
+    # 6 Four-year, medium full-time, inclusive, lower transfer-in
+    # 7 Four-year, medium full-time, inclusive, higher transfer-in
+    # 8 Four-year, medium full-time, selective, lower transfer-in
+    # 9 Four-year, medium full-time , selective, higher transfer-in
+    # 10 Four-year, full-time, inclusive, lower transfer-in
+    # 11 Four-year, full-time, inclusive, higher transfer-in
+    # 12 Four-year, full-time, selective, lower transfer-in
+    # 13 Four-year, full-time, selective, higher transfer-in
+    # 14 Four-year, full-time, more selective, lower transfer-in
+    # 15 Four-year, full-time, more selective, higher transfer-in
+    fouryear = full_data.query('CCUGPROF >= 5 and CCUGPROF <= 15')
     fouryear = fouryear.drop(columns='PREDDEG')
 
     # and then public or non-profit
@@ -86,10 +87,10 @@ def read_scorecard(filename):
     # 1 = Public
     # 2 = Private nonprofit
     # 3 = Private for-profit
-
     fouryear = fouryear.query('CONTROL != 3')
     
     # curroper == 0 means school has closed
+    # closed schools don't update their data
     fouryear = fouryear.query('CURROPER != 0')
     fouryear = fouryear.drop(columns='CURROPER')
     
@@ -111,13 +112,14 @@ for f in FILES:
 # This is filtering out columns that have little usable
 # data, including fields that have become obsolete 
 # over time
-
 sparse_set = set()
 for f in FILES:
     counts = file_contents[f].count()
     sparse_cols = counts[ counts < 400 ].index
     sparse_set.update(sparse_cols)
     
+    
+# Saves the subset data in a pickle file for faster processing
 for f in FILES:
     file_contents[f] = file_contents[f].drop(columns=sparse_set)
     new_name = f.replace(".csv", ".pck").replace("PP", "subset")
