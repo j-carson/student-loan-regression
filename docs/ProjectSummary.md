@@ -29,7 +29,6 @@ Median debt at graduation, for students who received loans, per school.
 * Number of undergraduates
 * Admissions
 	* Selective or noncompetitive admissions policy
-	* Freshman SAT score
 * Makeup of students
 	* Ethnicity
 	* Low income (Pell-eligible students)
@@ -179,56 +178,22 @@ The results presented do not include any data from collegedata.com, due to missi
 * Joining data - Despite not having enough data to do a full analysis, I thought I'd check to see if the subset of schools with PLUS information offered any potential insights. The scraped data did not include the code numbers used as primary keys in the government data. I attempted to use the python difflib ```closest_match``` function to match on school name and city. However, I was not able to join the data to a point where I was confident my results were correct. Chad suggested the ```fuzzywuzzy``` package as a substitute method, but I just ran out of time.
 
 
-## Algorithms
+## Results
 
-The following procedures from ```sklearn``` were used when creating and
-tuning my model:
+I only achieved an R-squared of .45. One problem is that the target feature (median debt at graduation) shows
+that most students who borrow actually borrow the maximum amount allowed for four years of study. There's 
+not as much variation in the target variable as there is in the features.
 
-```
-LinearRegression
-train_test_split
-LassoCV
-RidgeCV
-```
-In addition to using the output of these models, I tried to keep my target customer (a high school guidance counselor) in mind. A heavily engineered
-feature (combining multiple columns in a non-intuitive way) would not be actionable for such a person. I tried to prefer simpler, stand-alone features.
+Both the lasso and ridge models agree that the following features are most important:
 
-The feature enginnering in the final model included:
+- Cost : Students attending more expensive schools borrow more
+- Public universities : Students borrow more 
+- Black-serving institutions : HBCU's and PBI's (historically black and predominantly black colleges) students
+tend to take more loans 
+- Hispanic serving institutions : Students borrow less
+- Students at more selective schools also tend to have lower loans
 
-- Log of cost (which was itself an engineered feature averaging three highly collinear features related to tuition and cost of attendence)
-- Product of log of cost with a one-hot column for public universities
-- Square of percent of white undergraduates (a proxy for student diversity)
-
-## Tools
-
-In addition to ```sklearn``` above, I also used:
-
-```
-Selenium
-Requests
-Pandas
-Seaborn
-Matplotlib
-```
-
-## Lessons Learned
-
-### Data cleaning
-I believe my project could have benefitted from additional data cleaning. I struggled for quite a while with web scraping. The CSV file was easy to 
-download, but it was hard getting to get the number of columns 
-down to a reasonable number. Once I had something workable, I probably did not do enough to
-look at the outliers in the rows. Looking at the cost-by-category chart in the slide deck, I'm not sure
-my model is finding a difference in publc and private universities versus
-just chasing the outliers in the private university data. 
-
-
-### Future Work
-
-- Learn how to use the ```fuzzywuzzy``` package
-- Find a better source for the data that wasn't available on collegedata.com
-- Rework the feature engineering and feature selection given what I understand now to and make sure I truly found the best 
-linear model with the most predictive available features.
-- Build project time management skills
+Whether this is a property of the school (bigger financial aid budget) or a property of the student body (richer students would borrow less wherever they go) is not determined.
 
 ### Source code
 
